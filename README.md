@@ -52,7 +52,7 @@ Here, I mainly focus on the DFT modulated filterbanks. Still, all these modulate
 
 ### Where the repo already uses time-folding WOLA
 
-Yes. The analysis code in this repo already matches the usual time-folding WOLA implementation when we identify the FFT size $N$ with `T`, and the analysis filter length $L_a$ with `length(h)` after zero padding to an integer multiple of `T`.
+The analysis code in this repo already matches the usual time-folding WOLA implementation when we identify the FFT size $N$ with `T`, and the analysis filter length $L_a$ with `length(h)` after zero padding to an integer multiple of `T`.
 
 In the analysis examples [`impulse_in_the_frequency_domain.m`](./impulse_in_the_frequency_domain.m), [`structural_bias_of_phase.m`](./structural_bias_of_phase.m), [`frequency_shift_with_analytic_signal.m`](./frequency_shift_with_analytic_signal.m), and [`spare_that_SRC.m`](./spare_that_SRC.m), each frame uses the following three steps:
 
