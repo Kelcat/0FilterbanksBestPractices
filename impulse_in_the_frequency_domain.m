@@ -14,8 +14,8 @@ t = 1;
 Xs = []; 
 while t + B - 1 <= length(x)
     analysis_bfr = [analysis_bfr(B+1:end); x(t:t+B-1)]; % update analysis buffer
-    bar_x = sum(reshape(h(end:-1:1).*analysis_bfr, T, length(h)/T), 2); % this is the bar_x
-    X = fft(bar_x);   % transform to subband domain
+    bar_x = sum(reshape(h(end:-1:1).*analysis_bfr, T, length(h)/T), 2); % WOLA analysis: window, time-fold to T samples, then sum branches
+    X = fft(bar_x);   % T-point FFT gives the subband coefficients
     Xs = [Xs, X]; 
     
     t = t + B; 
