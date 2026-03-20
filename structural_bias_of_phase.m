@@ -22,9 +22,9 @@ while t + B - 1 <= length(x)
     fn = fn + 1;
 
     analysis_bfr = [analysis_bfr(B+1:end); x(t:t+B-1)]; % update analysis buffer
-    bar_x = sum(reshape(h(end:-1:1).*analysis_bfr, T, length(h)/T), 2); % this is the bar_x
+    bar_x = sum(reshape(h(end:-1:1).*analysis_bfr, T, length(h)/T), 2); % WOLA analysis: window, time-fold to T samples, then sum branches
     shift_bar_x = circshift(bar_x, -shift_i+1); % circular shifting shift_i-1 (in Matlab it is 1-shift_i)
-    X = fft(shift_bar_x);   % transform to subband domain
+    X = fft(shift_bar_x);   % T-point FFT gives the subband coefficients
 
     Xs(:,fn) = X;
 

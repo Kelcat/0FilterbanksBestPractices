@@ -50,6 +50,32 @@ Here, I mainly focus on the DFT modulated filterbanks. Still, all these modulate
 * The periodicity of modulation sequences induces the polyphase structure.
 * Trigonometric modulation series make FFT like fast algorithms possible.
 
+### Where the repo already uses time-folding WOLA
+
+Yes. The analysis code in this repo already matches the usual time-folding WOLA implementation when we identify the FFT size $N$ with `T`, and the analysis filter length $L_a$ with `length(h)` after zero padding to an integer multiple of `T`.
+
+In the analysis examples [`impulse_in_the_frequency_domain.m`](./impulse_in_the_frequency_domain.m), [`structural_bias_of_phase.m`](./structural_bias_of_phase.m), [`frequency_shift_with_analytic_signal.m`](./frequency_shift_with_analytic_signal.m), and [`spare_that_SRC.m`](./spare_that_SRC.m), each frame uses the following three steps:
+
+1. **Window / prototype-filter weighting**
+   ```matlab
+   h(end:-1:1).*analysis_bfr
+   ```
+   This is the time-domain multiplication between the analysis buffer and the reversed prototype filter.
+
+2. **Time folding**
+   ```matlab
+   bar_x = sum(reshape(..., T, length(h)/T), 2);
+   ```
+   `reshape(..., T, length(h)/T)` groups the weighted length-$L_a$ signal into `length(h)/T` blocks of length `T`, and `sum(..., 2)` adds the blocks row-wise. That is exactly the folding step that compresses the long weighted signal into `T` samples by summing every `T`-spaced branch.
+
+3. **FFT for subband coefficients**
+   ```matlab
+   X = fft(bar_x);
+   ```
+   The `T`-point FFT replaces explicit per-channel complex modulation and yields the subband coefficients directly.
+
+So, although the code does not call this procedure "WOLA" everywhere, the existing analysis path is already implementing the same windowing + time-folding + FFT structure.
+
 ### MIRROR symmetry if latency is unconcerned
 
 MIRROR symmetry imposes constraint $\pmb h = {\rm flip}(\pmb g)$, where $\pmb h$ and $\pmb g$ are the prototype analysis and synthesis filters, respectively. [This script](https://github.com/lixilinx/PracticalFilterbanks/blob/main/mirror_design_for_latency_insensitive_applications.m) generates the following design for applications insensitive to latency. With latency+1=filter length and symmetry setting either [1;0;0] or [0;0;0], the code finds this optimal design where analysis and synthesis filters mirror each other. Forcing symmetry=[-1;0;0] (analysis filter equals synthesis filter) leads to noticeable less sidelobe suppression as the resultant filter itself is symmetric, thus halves the continuous design freedoms.
